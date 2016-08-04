@@ -1,4 +1,10 @@
 (function() {
+    /**
+    * @function SongPlayer
+    * @desc code to set song, play song, and pause song. includes private attributes & private functions
+    * @param none, private functions will though.
+    * @returns {object} SongPlayer
+    */
     function SongPlayer() {
         //establish songplayer object within the service
         var SongPlayer = {};
@@ -11,7 +17,6 @@
         var currentSong = null;
         var currentBuzzObject = null;
         
-        //refactored so setSong() can be used elsewhere
         //function is private
         /**
          * @function setSong
@@ -31,18 +36,26 @@
             
             currentSong = song;
         };
+        /**
+         * @function playSong
+         * @desc Plays current song & sets playing variable to true
+         * @param {Object} song
+         */
+        var playSong = function(song) {
+            currentBuzzObject.play();
+            song.playing = true;  
+        };
         
         
         //SongPlayer.Play & .Pause are PUBLIC METHODS, since the user has access to them.
         SongPlayer.play = function(song) {
             if (currentSong !== song) {
                 setSong(song);
-                currentBuzzObject.play();
-                song.playing = true;
+                playSong(song);
                     
             } else if (currentSong === song) {
                 if (currentBuzzObject.isPaused()) {
-                    currentBuzzObject.play();
+                    playSong(song);
                 }
             }
         };
