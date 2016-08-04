@@ -2,19 +2,32 @@
     /**
     * @function SongPlayer
     * @desc code to set song, play song, and pause song. includes private attributes & private functions
-    * @param none, private functions will though.
+    * @param {Fixtures} to store the album data.
     * @returns {object} SongPlayer
     */
-    function SongPlayer() {
+    function SongPlayer(Fixtures) {
         //establish songplayer object within the service
         var SongPlayer = {};
-
+        
+        //store albumData in the private attribute
+        var currentAlbum = Fixtures.getAlbum();
+        
+        /*
+        * @function getSongIndex
+        * @desc returns the current index of the song in the songs array
+        * @returns {number} index
+        */
+        var getSongIndex = function(song) {
+            return currentAlbum.songs.indexOf(song);
+        }
+        
+        
         /**
         * @desc Buzz object audio file
         * @type {Object}
         */        
         //private attributes
-        var currentSong = null;
+        SongPlayer.currentSong = null;
         var currentBuzzObject = null;
         
         //function is private
@@ -34,7 +47,7 @@
                 preload: true
             });
             
-            currentSong = song;
+            SongPlayer.currentSong = song;
         };
         /**
          * @function playSong
@@ -49,20 +62,37 @@
         
         //SongPlayer.Play & .Pause are PUBLIC METHODS, since the user has access to them.
         SongPlayer.play = function(song) {
-            if (currentSong !== song) {
+            song = song || SongPlayer.currentSong;
+            if (SongPlayer.currentSong !== song) {
                 setSong(song);
                 playSong(song);
                     
-            } else if (currentSong === song) {
+            } else if (SongPlayer.currentSong === song) {
                 if (currentBuzzObject.isPaused()) {
                     playSong(song);
                 }
             }
         };
         SongPlayer.pause = function(song) {
+            song = song || SongPlayer.currentSong;
             currentBuzzObject.pause();
             song.playing = false;
         };
+        
+        SongPlayer.previous = function() {
+            var currentSongIndex = getSongIndex(SongPlayer.currentSong);
+            currentSongIndex--;
+            
+            if (currentSongIndex < 0) {
+                currentBuzzObject.stop();
+                SongPlayer.currentSong.playing = null;
+            } else {
+                var song = currentAlbum.songs[currentSongIndex];
+                setSong(song);
+                playSong(song);
+            }
+        };
+        
         
         
         return SongPlayer;
