@@ -42,12 +42,16 @@
                         scope.$apply(function() {
                             scope.value = percent * scope.max;
                         });
+
                     });
  
                     $document.bind('mouseup.thumb', function() {
                         $document.unbind('mousemove.thumb');
                         $document.unbind('mouseup.thumb');
                     });
+                };
+                scope.thumbStyle = function() {
+                    return {left: percentString()};
                 };
             }
         };
