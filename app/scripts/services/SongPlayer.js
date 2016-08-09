@@ -5,6 +5,7 @@
     * @param {Fixtures} to store the album data.
     * @returns {object} SongPlayer
     */
+    
     function SongPlayer($rootScope, Fixtures) {
         //establish songplayer object within the service
         var SongPlayer = {};
@@ -37,7 +38,7 @@
         * @desc Current Volume
         * @type {Number}
         */
-        SongPlayer.volume = null;
+        SongPlayer.volume = 0;
         
         
         var currentBuzzObject = null;
@@ -55,17 +56,21 @@
             }
             currentBuzzObject = new buzz.sound(song.audioUrl, {
                 formats: ['mp3'],
-                preload: true
+                preload: true,
+                autoplay: true,
+                loop: false
             });
             currentBuzzObject.bind('timeupdate', function() {
                 $rootScope.$apply(function() {
                     SongPlayer.currentTime = currentBuzzObject.getTime();
+                    autoPlay(song);
                 });
             });
             
             
             SongPlayer.currentSong = song;
         };
+        
         /**
          * @function playSong
          * @desc Plays current song & sets playing variable to true
@@ -83,6 +88,18 @@
         var stopSong = function(song) {
             currentBuzzObject.stop();
             song.playing = null;
+        };
+         /**
+         * @function autoPlay
+         * @desc calls SongPlayer.next if song status === song.duration
+         * @param {Object} song
+         */
+        var autoPlay = function(song) {
+            if (currentBuzzObject) {
+                if (currentBuzzObject.getTime() === song.duration) {
+                    SongPlayer.next();
+                }
+            }
         };
         
         //SongPlayer.Play & .Pause are PUBLIC METHODS, since the user has access to them.
